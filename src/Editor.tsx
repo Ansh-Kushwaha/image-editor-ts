@@ -12,6 +12,7 @@ import { crop, flipX, flipY, rotate, filter, transform, adjust } from "./assets"
 import { useSelector } from "react-redux";
 import Cropper from "./Cropper";
 import CropTool from "./components/CropTool";
+import AdjustmentSelection from "./components/AdjustmentSelection";
 
 function Editor() {
   const imageURL = useSelector((state: any) => state.image.value);
@@ -24,8 +25,10 @@ function Editor() {
 
   const [flippedX, setFlippedX] = useState(false);
   const [flippedY, setFlippedY] = useState(false);
-
+  
+  const [showRightBar, setShowRightBar] = useState(false);
   const [showFilerSelection, setShowFilterSelection] = useState(false);
+  const [showAdjustmentSelection, setShowAdjustmentSelection] = useState(false);
 
   const [viewportDimensions, SetViewportDimensions] = useState({
     width: 0,
@@ -207,7 +210,6 @@ function Editor() {
         return;
       }
 
-
       const name = e.target.name();
       const rect = imageRef?.current;
       if (!rect) return;
@@ -297,14 +299,23 @@ function Editor() {
 
           <Tool toolName="filter" 
             icon={filter}
-            onClick={() => setShowFilterSelection(!showFilerSelection)}>
+            onClick={() => {
+              setShowAdjustmentSelection(false);
+              setShowFilterSelection(!showFilerSelection)
+              setShowRightBar(!showRightBar);  
+            }}
+          >
 
             Filters
           </Tool>
           <Tool toolName="transform" icon={transform} onClick={handleTransform}>
             Tform
           </Tool>
-          <Tool toolName="adjust" icon={adjust} onClick={() => {}}>
+          <Tool toolName="adjust" icon={adjust} onClick={() => {
+              setShowFilterSelection(false);
+              setShowAdjustmentSelection(!showAdjustmentSelection)
+              setShowRightBar(!showRightBar);  
+            }}>
             Adjust
           </Tool>
           {/* <Tool toolName="blur" onClick={handleBlur}>
@@ -351,11 +362,13 @@ function Editor() {
 
         {/* Details */}
 
-        <div className={`h-screen w-3/12 shrink-0 bg-slate-100 dark:bg-slate-900 pt-16 pb-2 shadow-md`}>
+        <div className={` h-screen w-3/12 shrink-0 bg-slate-100 dark:bg-slate-900 pt-16 pb-2 shadow-md`}>
           <div className={`${!showFilerSelection ? "hidden": ""} h-full w-full overflow-y-scroll bg-inherit`}>
             <FilterSelection />
           </div>
-
+          <div className={`${!showAdjustmentSelection ? "hidden": ""} h-full w-full overflow-y-scroll bg-inherit`}>
+            <AdjustmentSelection />
+          </div>
         </div>
 
       </main>
